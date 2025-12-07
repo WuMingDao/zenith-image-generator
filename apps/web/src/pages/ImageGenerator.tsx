@@ -145,13 +145,38 @@ export default function ImageGenerator() {
       if (stored) {
         try {
           const { iv, data } = JSON.parse(stored);
-          crypto.subtle.importKey("raw", new TextEncoder().encode(navigator.userAgent), "PBKDF2", false, ["deriveKey"])
-            .then(key => crypto.subtle.deriveKey(
-              { name: "PBKDF2", salt: new TextEncoder().encode("hf-salt"), iterations: 100000, hash: "SHA-256" },
-              key, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
-            ))
-            .then(derivedKey => crypto.subtle.decrypt({ name: "AES-GCM", iv: new Uint8Array(iv) }, derivedKey, new Uint8Array(data)))
-            .then(decrypted => setHfToken(new TextDecoder().decode(decrypted)))
+          crypto.subtle
+            .importKey(
+              "raw",
+              new TextEncoder().encode(navigator.userAgent),
+              "PBKDF2",
+              false,
+              ["deriveKey"]
+            )
+            .then((key) =>
+              crypto.subtle.deriveKey(
+                {
+                  name: "PBKDF2",
+                  salt: new TextEncoder().encode("hf-salt"),
+                  iterations: 100000,
+                  hash: "SHA-256",
+                },
+                key,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["decrypt"]
+              )
+            )
+            .then((derivedKey) =>
+              crypto.subtle.decrypt(
+                { name: "AES-GCM", iv: new Uint8Array(iv) },
+                derivedKey,
+                new Uint8Array(data)
+              )
+            )
+            .then((decrypted) =>
+              setHfToken(new TextDecoder().decode(decrypted))
+            )
             .catch(() => localStorage.removeItem("hfToken"));
         } catch {
           localStorage.removeItem("hfToken");
@@ -211,15 +236,30 @@ export default function ImageGenerator() {
         ["deriveKey"]
       );
       const derivedKey = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: new TextEncoder().encode("hf-salt"), iterations: 100000, hash: "SHA-256" },
+        {
+          name: "PBKDF2",
+          salt: new TextEncoder().encode("hf-salt"),
+          iterations: 100000,
+          hash: "SHA-256",
+        },
         key,
         { name: "AES-GCM", length: 256 },
         false,
         ["encrypt"]
       );
       const iv = crypto.getRandomValues(new Uint8Array(12));
-      const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, derivedKey, new TextEncoder().encode(token));
-      localStorage.setItem("hfToken", JSON.stringify({ iv: Array.from(iv), data: Array.from(new Uint8Array(encrypted)) }));
+      const encrypted = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        derivedKey,
+        new TextEncoder().encode(token)
+      );
+      localStorage.setItem(
+        "hfToken",
+        JSON.stringify({
+          iv: Array.from(iv),
+          data: Array.from(new Uint8Array(encrypted)),
+        })
+      );
       toast.success("HF Token saved");
     } else {
       localStorage.removeItem("hfToken");
@@ -598,7 +638,7 @@ export default function ImageGenerator() {
                           <Switch
                             id="uhd"
                             checked={uhd}
-                            className={`" data-[state=unchecked]:[&>span]:bg-zinc-500 data-[state=checked]:[&>span]:bg-yellow-400 uhd ? "bg-orange-500" : "border-xl border-zinc-800"`}
+                            className={`data-[state=unchecked]:[&>span]:bg-zinc-500 data-[state=checked]:[&>span]:bg-yellow-400 uhd ? "bg-orange-500" : "border-xl border-zinc-800"`}
                             onCheckedChange={handleUhdToggle}
                           />
                         </div>
