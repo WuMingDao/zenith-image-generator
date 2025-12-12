@@ -63,8 +63,8 @@ pnpm dev:web
 | 文档 | 描述 |
 |------|------|
 | [贡献指南](./CONTRIBUTING.md) | 本地配置、局域网访问、开发 |
-| [部署指南](./docs/DEPLOYMENT.md) | Cloudflare、Vercel、Netlify 教程 |
-| [API 参考](./docs/API.md) | 接口、参数、安全 |
+| [部署指南](./docs/zh/DEPLOYMENT.md) | Cloudflare、Vercel、Netlify 教程 |
+| [API 参考](./docs/zh/API.md) | 接口、参数、代码示例 |
 
 ## 技术栈
 

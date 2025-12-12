@@ -71,15 +71,15 @@ curl -X POST https://your-project.pages.dev/api/generate \
   -d '{"prompt": "a cute cat", "width": 1024, "height": 1024}'
 ```
 
-📖 **[Full API Reference](./docs/API.md)** - Providers, parameters, code examples
+📖 **[Full API Reference](./docs/en/API.md)** - Providers, parameters, code examples
 
 ## Documentation
 
 | Doc | Description |
 |-----|-------------|
 | [Contributing](./CONTRIBUTING.md) | Local setup, LAN access, development |
-| [Deployment](./docs/DEPLOYMENT.md) | Cloudflare, Vercel, Netlify guides |
-| [API Reference](./docs/API.md) | Endpoints, parameters, code examples |
+| [Deployment](./docs/en/DEPLOYMENT.md) | Cloudflare, Vercel, Netlify guides |
+| [API Reference](./docs/en/API.md) | Endpoints, parameters, code examples |
 
 ## Tech Stack
 
