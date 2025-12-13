@@ -98,6 +98,16 @@
     "doubleClickEdit": "Double-click to edit",
     "doubleClickEnlarge": "Double-click to enlarge"
   },
+  "storage": {
+    "limitReached": "Storage Limit Reached",
+    "limitReachedCount": "You have reached the maximum of {{count}} images.",
+    "limitReachedSize": "Storage is full ({{size}} MB / {{max}} MB).",
+    "downloadFirst": "Please download your images before cleanup. Old images will be removed to make space for new ones.",
+    "currentStatus": "Current: {{count}} images, {{size}} MB",
+    "downloadAllFirst": "Download All Images",
+    "confirmCleanup": "Confirm Cleanup",
+    "cleanupAndContinue": "Cleanup & Continue"
+  },
   "conversation": {
     "title": "Conversation Flow",
     "startTitle": "Start a conversation",

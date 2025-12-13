@@ -73,11 +73,11 @@ export function FlowInput({ providerLabel }: FlowInputProps) {
 
   // Update preview when config changes
   useEffect(() => {
-    // If editing mode and not modified, don't show preview
-    if (editingConfigId && !isEditingModified) {
-      setPreviewConfig(null)
-      return
-    }
+    // // If editing mode and not modified, don't show preview
+    // if (editingConfigId && !isEditingModified) {
+    //   setPreviewConfig(null)
+    //   return
+    // }
 
     // If there's content, show preview
     if (prompt.trim()) {
@@ -91,7 +91,7 @@ export function FlowInput({ providerLabel }: FlowInputProps) {
     } else {
       setPreviewConfig(null)
     }
-  }, [prompt, currentResolution.w, currentResolution.h, batchCount, seed, editingConfigId, isEditingModified, setPreviewConfig])
+  }, [prompt, currentResolution.w, currentResolution.h, batchCount, seed, setPreviewConfig])
 
   // Handle input change
   const handleInputChange = (value: string) => {

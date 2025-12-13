@@ -17,6 +17,7 @@ import { ConfigNode } from '@/components/flow/ConfigNode'
 import { ImageNode } from '@/components/flow/ImageNode'
 import { FlowInput } from '@/components/flow/FlowInput'
 import { Lightbox } from '@/components/flow/Lightbox'
+import { StorageLimitModal } from '@/components/flow/StorageLimitModal'
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
 import { useFlowStore, LAYOUT } from '@/stores/flowStore'
 import {
@@ -28,7 +29,7 @@ import {
 } from '@/lib/constants'
 import { encryptAndStoreToken, loadAllTokens } from '@/lib/crypto'
 import { downloadImagesAsZip } from '@/lib/utils'
-import { getBlob, blobToDataUrl } from '@/lib/imageBlobStore'
+import { getBlob, blobToDataUrl, cleanupForNewBlob, storeBlob } from '@/lib/imageBlobStore'
 
 const nodeTypes = {
   configNode: ConfigNode,
@@ -45,6 +46,9 @@ function FlowCanvas() {
   const updateConfigPosition = useFlowStore((s) => s.updateConfigPosition)
   const loadConfigForEditing = useFlowStore((s) => s.loadConfigForEditing)
   const clearAll = useFlowStore((s) => s.clearAll)
+  const storageLimitState = useFlowStore((s) => s.storageLimitState)
+  const clearStorageLimitState = useFlowStore((s) => s.clearStorageLimitState)
+  const updateImageGenerated = useFlowStore((s) => s.updateImageGenerated)
 
   // Download state
   const [isDownloading, setIsDownloading] = useState(false)
@@ -216,6 +220,40 @@ function FlowCanvas() {
     }
   }, [imageNodes, t])
 
+  // Handle storage limit modal - download all from modal
+  const handleStorageDownloadAll = useCallback(async () => {
+    await handleDownloadAll()
+  }, [handleDownloadAll])
+
+  // Handle storage limit modal - confirm cleanup
+  const handleConfirmCleanup = useCallback(async () => {
+    if (!storageLimitState?.pendingBlob || !storageLimitState?.pendingImageId) {
+      clearStorageLimitState()
+      return
+    }
+
+    const { pendingBlob, pendingImageId } = storageLimitState
+
+    // Perform cleanup
+    await cleanupForNewBlob(pendingBlob.size)
+
+    // Store the pending blob
+    const blobId = await storeBlob(pendingImageId, pendingBlob)
+
+    // Update the image with the new blobId
+    const imageNode = imageNodes.find((n) => n.id === pendingImageId)
+    if (imageNode && blobId) {
+      updateImageGenerated(
+        pendingImageId,
+        imageNode.data.imageUrl || '',
+        imageNode.data.duration || '',
+        blobId
+      )
+    }
+
+    clearStorageLimitState()
+  }, [storageLimitState, imageNodes, updateImageGenerated, clearStorageLimitState])
+
   return (
     <div className="h-screen w-screen bg-zinc-950">
       <ReactFlow
@@ -346,6 +384,18 @@ function FlowCanvas() {
 
       {/* Lightbox */}
       <Lightbox />
+
+      {/* Storage Limit Modal */}
+      <StorageLimitModal
+        isOpen={!!storageLimitState?.needsCleanup}
+        reason={storageLimitState?.reason || null}
+        currentCount={storageLimitState?.currentCount || 0}
+        currentSizeMB={storageLimitState?.currentSizeMB || 0}
+        onDownloadAll={handleStorageDownloadAll}
+        onConfirmCleanup={handleConfirmCleanup}
+        onCancel={clearStorageLimitState}
+        isDownloading={isDownloading}
+      />
     </div>
   )
 }

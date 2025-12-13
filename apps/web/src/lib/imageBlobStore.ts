@@ -53,26 +53,73 @@ async function getDB(): Promise<IDBPDatabase> {
 }
 
 /**
- * Store a blob with the given ID
- * Returns the blob ID if successful, null if storage limit exceeded
+ * Check if storage needs cleanup before storing a new blob
+ * Returns cleanup info if needed, null if storage is OK
  */
-export async function storeBlob(id: string, blob: Blob): Promise<string | null> {
-  try {
-    const db = await getDB()
-    const maxStorageBytes = STORAGE_LIMITS.MAX_STORAGE_MB * 1024 * 1024
+export async function checkStorageLimit(newBlobSize: number): Promise<{
+  needsCleanup: boolean
+  reason: 'count' | 'size' | null
+  currentCount: number
+  currentSizeMB: number
+} | null> {
+  const count = await getBlobCount()
+  const totalSize = await getTotalStorageSize()
+  const totalSizeMB = Math.round((totalSize / 1024 / 1024) * 10) / 10
+  const maxStorageBytes = STORAGE_LIMITS.MAX_STORAGE_MB * 1024 * 1024
 
-    // Check if we need to cleanup old blobs first (dual limit: count OR size)
+  if (count >= STORAGE_LIMITS.MAX_IMAGES) {
+    return {
+      needsCleanup: true,
+      reason: 'count',
+      currentCount: count,
+      currentSizeMB: totalSizeMB,
+    }
+  }
+
+  if (totalSize + newBlobSize > maxStorageBytes) {
+    return {
+      needsCleanup: true,
+      reason: 'size',
+      currentCount: count,
+      currentSizeMB: totalSizeMB,
+    }
+  }
+
+  return null
+}
+
+/**
+ * Cleanup oldest blobs to make room for new one
+ * Call this after user confirms cleanup
+ */
+export async function cleanupForNewBlob(newBlobSize: number): Promise<boolean> {
+  try {
+    const maxStorageBytes = STORAGE_LIMITS.MAX_STORAGE_MB * 1024 * 1024
     let count = await getBlobCount()
     let totalSize = await getTotalStorageSize()
 
     // Remove oldest blobs until we have room
-    while (count >= STORAGE_LIMITS.MAX_IMAGES || totalSize + blob.size > maxStorageBytes) {
+    while (count >= STORAGE_LIMITS.MAX_IMAGES || totalSize + newBlobSize > maxStorageBytes) {
       const removed = await removeOldestBlob()
-      if (!removed) break // No more blobs to remove
-      // Re-fetch after removal
+      if (!removed) break
       count = await getBlobCount()
       totalSize = await getTotalStorageSize()
     }
+
+    return true
+  } catch (e) {
+    console.error('Failed to cleanup blobs:', e)
+    return false
+  }
+}
+
+/**
+ * Store a blob with the given ID (without auto-cleanup)
+ * Returns the blob ID if successful, null if failed
+ */
+export async function storeBlob(id: string, blob: Blob): Promise<string | null> {
+  try {
+    const db = await getDB()
 
     // Store the blob
     await db.put(BLOBS_STORE, blob, id)
@@ -91,6 +138,20 @@ export async function storeBlob(id: string, blob: Blob): Promise<string | null> 
     console.error('Failed to store blob:', e)
     return null
   }
+}
+
+/**
+ * Store a blob with auto-cleanup (for backward compatibility)
+ * Returns the blob ID if successful, 'cleanup_needed' if user confirmation required
+ */
+export async function storeBlobWithCleanup(id: string, blob: Blob): Promise<string | 'cleanup_needed' | null> {
+  const limitCheck = await checkStorageLimit(blob.size)
+
+  if (limitCheck?.needsCleanup) {
+    return 'cleanup_needed'
+  }
+
+  return storeBlob(id, blob)
 }
 
 /**

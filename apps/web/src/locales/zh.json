@@ -98,6 +98,16 @@
     "doubleClickEdit": "双击编辑",
     "doubleClickEnlarge": "双击放大"
   },
+  "storage": {
+    "limitReached": "存储空间已满",
+    "limitReachedCount": "已达到最大图片数量限制（{{count}} 张）。",
+    "limitReachedSize": "存储空间已满（{{size}} MB / {{max}} MB）。",
+    "downloadFirst": "请先下载您的图片，然后再进行清理。旧图片将被删除以腾出空间。",
+    "currentStatus": "当前：{{count}} 张图片，{{size}} MB",
+    "downloadAllFirst": "下载所有图片",
+    "confirmCleanup": "确认清理",
+    "cleanupAndContinue": "清理并继续"
+  },
   "conversation": {
     "title": "对话流程",
     "startTitle": "开始对话",

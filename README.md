@@ -26,6 +26,10 @@ batch generation, and one-click deployment to Cloudflare Pages.
 - **4x Upscaling** - RealESRGAN integration
 - **Secure Storage** - API keys encrypted with AES-256-GCM
 - **Flow Mode** - Visual canvas for batch generation (experimental)
+  - Local image caching with IndexedDB blob storage
+  - Dual limits: 500 images or 4GB max storage
+  - LRU cleanup with user confirmation before deletion
+  - Download all images before cleanup
 
 ## Quick Start
 

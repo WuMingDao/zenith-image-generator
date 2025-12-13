@@ -6,7 +6,7 @@ import type { ImageData } from '@/stores/flowStore'
 import { useFlowStore } from '@/stores/flowStore'
 import { loadSettings, type ProviderType, getModelsByProvider, getDefaultModel } from '@/lib/constants'
 import { loadAllTokens } from '@/lib/crypto'
-import { storeBlob, getBlob, urlToBlob, blobToObjectUrl, blobToDataUrl } from '@/lib/imageBlobStore'
+import { storeBlob, getBlob, urlToBlob, blobToObjectUrl, blobToDataUrl, checkStorageLimit } from '@/lib/imageBlobStore'
 import type { ImageDetails } from '@z-image/shared'
 
 interface ImageNodeProps extends NodeProps {
@@ -75,6 +75,7 @@ function ImageNodeComponent({ id, data }: ImageNodeProps) {
   const updateImageGenerated = useFlowStore((s) => s.updateImageGenerated)
   const updateImageError = useFlowStore((s) => s.updateImageError)
   const setLightboxImage = useFlowStore((s) => s.setLightboxImage)
+  const setStorageLimitState = useFlowStore((s) => s.setStorageLimitState)
   const hasHydrated = useFlowStore((s) => s._hasHydrated)
 
   // Cleanup object URL on unmount
@@ -175,6 +176,24 @@ function ImageNodeComponent({ id, data }: ImageNodeProps) {
         let blobId: string | undefined
         try {
           const blob = await urlToBlob(imageDetails.url)
+
+          // Check storage limit before storing
+          const limitCheck = await checkStorageLimit(blob.size)
+          if (limitCheck?.needsCleanup) {
+            // Storage limit reached - show modal
+            setStorageLimitState({
+              needsCleanup: true,
+              reason: limitCheck.reason,
+              currentCount: limitCheck.currentCount,
+              currentSizeMB: limitCheck.currentSizeMB,
+              pendingImageId: id,
+              pendingBlob: blob,
+            })
+            // Still update the image with URL (without blob storage)
+            updateImageGenerated(id, imageDetails.url, imageDetails.duration, undefined)
+            return
+          }
+
           const storedId = await storeBlob(id, blob)
           if (storedId) {
             blobId = storedId
@@ -188,7 +207,7 @@ function ImageNodeComponent({ id, data }: ImageNodeProps) {
         updateImageError(id, err instanceof Error ? err.message : 'Failed to generate')
       }
     })()
-  }, [id, prompt, width, height, seed, imageUrl, isLoading, hasHydrated, updateImageGenerated, updateImageError])
+  }, [id, prompt, width, height, seed, imageUrl, isLoading, hasHydrated, updateImageGenerated, updateImageError, setStorageLimitState])
 
   const handleDownload = async () => {
     if (!imageBlobId && !imageUrl) return

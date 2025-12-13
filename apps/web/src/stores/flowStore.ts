@@ -47,6 +47,16 @@ export interface ImageData extends Record<string, unknown> {
   error?: string
 }
 
+// Storage limit state for modal
+export interface StorageLimitState {
+  needsCleanup: boolean
+  reason: 'count' | 'size' | null
+  currentCount: number
+  currentSizeMB: number
+  pendingImageId: string | null
+  pendingBlob: Blob | null
+}
+
 export interface FlowState {
   // Nodes
   configNodes: Node<ConfigData>[]
@@ -61,6 +71,9 @@ export interface FlowState {
 
   // Lightbox state (not persisted)
   lightboxImageId: string | null
+
+  // Storage limit state (not persisted)
+  storageLimitState: StorageLimitState | null
 
   // Counter for unique IDs
   nodeIdCounter: number
@@ -80,6 +93,10 @@ export interface FlowState {
   updateImageError: (imageId: string, error: string) => void
 
   setLightboxImage: (imageId: string | null) => void
+
+  // Storage limit actions
+  setStorageLimitState: (state: StorageLimitState | null) => void
+  clearStorageLimitState: () => void
 
   deleteConfig: (configId: string) => void
   clearAll: () => void
@@ -150,6 +167,7 @@ export const useFlowStore = create<FlowState>()(
         editingConfigId: null,
         isEditingModified: false,
         lightboxImageId: null,
+        storageLimitState: null,
         nodeIdCounter: 0,
         _hasHydrated: false,
 
@@ -307,6 +325,14 @@ export const useFlowStore = create<FlowState>()(
 
         setLightboxImage: (imageId) => {
           set({ lightboxImageId: imageId })
+        },
+
+        setStorageLimitState: (state) => {
+          set({ storageLimitState: state })
+        },
+
+        clearStorageLimitState: () => {
+          set({ storageLimitState: null })
         },
 
         deleteConfig: (configId) => {
