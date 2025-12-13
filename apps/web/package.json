@@ -27,7 +27,7 @@
     "hono": "^4.6.0",
     "idb": "^8.0.3",
     "lucide-react": "^0.555.0",
-    "openai": "^4.76.0",
+    "openai": "^6.10.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.10.1",
