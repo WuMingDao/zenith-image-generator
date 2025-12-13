@@ -28,7 +28,7 @@
     "idb": "^8.0.3",
     "lucide-react": "^0.555.0",
     "openai": "^4.76.0",
-    "react": "^19.2.0",
+    "react": "^19.2.3",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.10.1",
     "sonner": "^2.0.7",
