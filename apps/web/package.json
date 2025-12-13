@@ -23,7 +23,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dagre": "^0.8.5",
-    "framer-motion": "^12.23.25",
+    "framer-motion": "^12.23.26",
     "hono": "^4.6.0",
     "idb": "^8.0.3",
     "lucide-react": "^0.555.0",
