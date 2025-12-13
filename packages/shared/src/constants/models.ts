@@ -2,15 +2,15 @@
  * Model Configuration
  */
 
-import type { ModelConfig, ProviderType } from "../types/provider";
+import type { ModelConfig, ProviderType } from '../types/provider'
 
 /** All model configurations */
 export const MODEL_CONFIGS: ModelConfig[] = [
   // Gitee AI models
   {
-    id: "z-image-turbo",
-    name: "Z-Image Turbo",
-    provider: "gitee",
+    id: 'z-image-turbo',
+    name: 'Z-Image Turbo',
+    provider: 'gitee',
     features: {
       negativePrompt: true,
       steps: { min: 1, max: 20, default: 9 },
@@ -18,9 +18,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "Qwen-Image",
-    name: "Qwen Image",
-    provider: "gitee",
+    id: 'Qwen-Image',
+    name: 'Qwen Image',
+    provider: 'gitee',
     features: {
       negativePrompt: true,
       steps: { min: 4, max: 50, default: 20 },
@@ -28,9 +28,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "flux-1-schnell",
-    name: "FLUX.1 Schnell",
-    provider: "gitee",
+    id: 'flux-1-schnell',
+    name: 'FLUX.1 Schnell',
+    provider: 'gitee',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 50, default: 8 },
@@ -39,9 +39,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "FLUX_1-Krea-dev",
-    name: "FLUX.1 Krea",
-    provider: "gitee",
+    id: 'FLUX_1-Krea-dev',
+    name: 'FLUX.1 Krea',
+    provider: 'gitee',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 50, default: 20 },
@@ -50,9 +50,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "FLUX.1-dev",
-    name: "FLUX.1",
-    provider: "gitee",
+    id: 'FLUX.1-dev',
+    name: 'FLUX.1',
+    provider: 'gitee',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 50, default: 20 },
@@ -62,9 +62,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
   },
   // HuggingFace models
   {
-    id: "z-image-turbo",
-    name: "Z-Image Turbo",
-    provider: "huggingface",
+    id: 'z-image-turbo',
+    name: 'Z-Image Turbo',
+    provider: 'huggingface',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 20, default: 9 },
@@ -72,9 +72,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "qwen-image-fast",
-    name: "Qwen Image Fast",
-    provider: "huggingface",
+    id: 'qwen-image-fast',
+    name: 'Qwen Image Fast',
+    provider: 'huggingface',
     features: {
       negativePrompt: false,
       steps: { min: 4, max: 28, default: 8 },
@@ -82,9 +82,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "ovis-image",
-    name: "Ovis Image",
-    provider: "huggingface",
+    id: 'ovis-image',
+    name: 'Ovis Image',
+    provider: 'huggingface',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 50, default: 24 },
@@ -92,9 +92,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "flux-1-schnell",
-    name: "FLUX.1 Schnell",
-    provider: "huggingface",
+    id: 'flux-1-schnell',
+    name: 'FLUX.1 Schnell',
+    provider: 'huggingface',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 50, default: 8 },
@@ -103,9 +103,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
   },
   // ModelScope models
   {
-    id: "Tongyi-MAI/Z-Image-Turbo",
-    name: "Z-Image Turbo",
-    provider: "modelscope",
+    id: 'Tongyi-MAI/Z-Image-Turbo',
+    name: 'Z-Image Turbo',
+    provider: 'modelscope',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 20, default: 9 },
@@ -113,9 +113,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "black-forest-labs/FLUX.2-dev",
-    name: "FLUX.2",
-    provider: "modelscope",
+    id: 'black-forest-labs/FLUX.2-dev',
+    name: 'FLUX.2',
+    provider: 'modelscope',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 50, default: 24 },
@@ -124,9 +124,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "black-forest-labs/FLUX.1-Krea-dev",
-    name: "FLUX.1 Krea",
-    provider: "modelscope",
+    id: 'black-forest-labs/FLUX.1-Krea-dev',
+    name: 'FLUX.1 Krea',
+    provider: 'modelscope',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 50, default: 24 },
@@ -135,9 +135,9 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     },
   },
   {
-    id: "MusePublic/489_ckpt_FLUX_1",
-    name: "FLUX.1",
-    provider: "modelscope",
+    id: 'MusePublic/489_ckpt_FLUX_1',
+    name: 'FLUX.1',
+    provider: 'modelscope',
     features: {
       negativePrompt: false,
       steps: { min: 1, max: 50, default: 24 },
@@ -145,16 +145,16 @@ export const MODEL_CONFIGS: ModelConfig[] = [
       seed: true,
     },
   },
-];
+]
 
 /** Get models by provider */
 export function getModelsByProvider(provider: ProviderType): ModelConfig[] {
-  return MODEL_CONFIGS.filter((m) => m.provider === provider);
+  return MODEL_CONFIGS.filter((m) => m.provider === provider)
 }
 
 /** Get model configuration by ID */
 export function getModelConfig(modelId: string): ModelConfig | undefined {
-  return MODEL_CONFIGS.find((m) => m.id === modelId);
+  return MODEL_CONFIGS.find((m) => m.id === modelId)
 }
 
 /** Get model configuration by provider and ID */
@@ -162,5 +162,5 @@ export function getModelByProviderAndId(
   provider: ProviderType,
   modelId: string
 ): ModelConfig | undefined {
-  return MODEL_CONFIGS.find((m) => m.provider === provider && m.id === modelId);
+  return MODEL_CONFIGS.find((m) => m.provider === provider && m.id === modelId)
 }

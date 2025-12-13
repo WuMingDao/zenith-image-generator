@@ -22,16 +22,29 @@ function parseModelScopeError(status: number, data: ModelScopeErrorResponse): Er
   const message = data.errors?.message || data.error || data.message || `HTTP ${status}`
 
   // Check for authentication errors
-  if (status === 401 || status === 403 || message.toLowerCase().includes('unauthorized') || message.toLowerCase().includes('invalid token')) {
+  if (
+    status === 401 ||
+    status === 403 ||
+    message.toLowerCase().includes('unauthorized') ||
+    message.toLowerCase().includes('invalid token')
+  ) {
     return Errors.authInvalid(provider, message)
   }
 
   // Check for quota/rate limit errors
-  if (status === 429 || message.toLowerCase().includes('rate limit') || message.toLowerCase().includes('too many')) {
+  if (
+    status === 429 ||
+    message.toLowerCase().includes('rate limit') ||
+    message.toLowerCase().includes('too many')
+  ) {
     return Errors.rateLimited(provider)
   }
 
-  if (message.toLowerCase().includes('quota') || message.toLowerCase().includes('exceeded') || message.toLowerCase().includes('insufficient')) {
+  if (
+    message.toLowerCase().includes('quota') ||
+    message.toLowerCase().includes('exceeded') ||
+    message.toLowerCase().includes('insufficient')
+  ) {
     return Errors.quotaExceeded(provider)
   }
 

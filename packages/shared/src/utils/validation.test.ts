@@ -30,10 +30,10 @@ describe('validatePrompt', () => {
   })
 
   it('should return invalid for prompt exceeding max length', () => {
-    const longPrompt = 'a'.repeat(10001)
+    const longPrompt = 'a'.repeat(4001)
     const result = validatePrompt(longPrompt)
     expect(result.valid).toBe(false)
-    expect(result.error).toContain('10000')
+    expect(result.error).toContain('4000')
   })
 })
 

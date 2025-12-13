@@ -29,12 +29,20 @@ function parseGiteeError(status: number, data: GiteeErrorResponse): Error {
   const message = data.error?.message || data.message || `HTTP ${status}`
 
   // Check for authentication errors
-  if (status === 401 || message.toLowerCase().includes('unauthorized') || message.toLowerCase().includes('invalid api key')) {
+  if (
+    status === 401 ||
+    message.toLowerCase().includes('unauthorized') ||
+    message.toLowerCase().includes('invalid api key')
+  ) {
     return Errors.authInvalid(provider, message)
   }
 
   // Check for quota/rate limit errors
-  if (status === 429 || message.toLowerCase().includes('rate limit') || message.toLowerCase().includes('quota')) {
+  if (
+    status === 429 ||
+    message.toLowerCase().includes('rate limit') ||
+    message.toLowerCase().includes('quota')
+  ) {
     if (message.toLowerCase().includes('quota')) {
       return Errors.quotaExceeded(provider)
     }

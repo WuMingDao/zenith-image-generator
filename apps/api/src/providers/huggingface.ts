@@ -21,7 +21,12 @@ function parseHuggingFaceError(message: string, status?: number): Error {
   }
 
   // Check for authentication errors
-  if (status === 401 || status === 403 || lowerMsg.includes('unauthorized') || lowerMsg.includes('forbidden')) {
+  if (
+    status === 401 ||
+    status === 403 ||
+    lowerMsg.includes('unauthorized') ||
+    lowerMsg.includes('forbidden')
+  ) {
     return Errors.authInvalid(provider, message)
   }
 
@@ -69,7 +74,10 @@ function extractCompleteEventData(sseStream: string): unknown {
     }
   }
   // No complete/error event found, show raw response for debugging
-  throw Errors.providerError('HuggingFace', `Unexpected SSE response: ${sseStream.substring(0, 200)}`)
+  throw Errors.providerError(
+    'HuggingFace',
+    `Unexpected SSE response: ${sseStream.substring(0, 200)}`
+  )
 }
 
 /** Call Gradio API */

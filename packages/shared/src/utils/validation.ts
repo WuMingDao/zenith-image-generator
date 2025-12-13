@@ -16,8 +16,8 @@ export function validatePrompt(prompt: string): ValidationResult {
   if (prompt.trim().length === 0) {
     return { valid: false, error: 'Prompt cannot be empty' }
   }
-  if (prompt.length > 10000) {
-    return { valid: false, error: 'Prompt exceeds maximum length of 10000 characters' }
+  if (prompt.length > 4000) {
+    return { valid: false, error: 'Prompt exceeds maximum length of 4000 characters' }
   }
   return { valid: true }
 }

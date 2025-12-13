@@ -106,10 +106,14 @@ export const Errors = {
     new ApiError(`API token has expired for ${provider}`, ApiErrorCode.AUTH_EXPIRED, { provider }),
 
   rateLimited: (provider: string, retryAfter?: number) =>
-    new ApiError(`Rate limited by ${provider}. Please try again later.`, ApiErrorCode.RATE_LIMITED, {
-      provider,
-      retryAfter,
-    }),
+    new ApiError(
+      `Rate limited by ${provider}. Please try again later.`,
+      ApiErrorCode.RATE_LIMITED,
+      {
+        provider,
+        retryAfter,
+      }
+    ),
 
   quotaExceeded: (provider: string) =>
     new ApiError(`API quota exceeded for ${provider}`, ApiErrorCode.QUOTA_EXCEEDED, { provider }),
@@ -147,5 +151,6 @@ export const Errors = {
   timeout: (provider: string) =>
     new ApiError(`Request to ${provider} timed out`, ApiErrorCode.TIMEOUT, { provider }),
 
-  unknown: (message?: string) => new ApiError(message || 'An unknown error occurred', ApiErrorCode.UNKNOWN),
+  unknown: (message?: string) =>
+    new ApiError(message || 'An unknown error occurred', ApiErrorCode.UNKNOWN),
 }
