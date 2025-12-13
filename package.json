@@ -28,7 +28,7 @@
     "docker:compose:dev": "docker compose --profile dev up"
   },
   "dependencies": {
-    "hono": "^4.6.0"
+    "hono": "^4.10.8"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
