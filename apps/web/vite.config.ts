@@ -5,6 +5,11 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    // Security: Restrict CORS in development
+    // Only allow requests from same origin by default
+    cors: false,
+  },
   plugins: [
     react({
       babel: {
