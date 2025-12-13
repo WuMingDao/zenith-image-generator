@@ -107,7 +107,7 @@ jobs:
           git push origin "v${{ steps.bump.outputs.version }}"
 
       - name: Create GitHub Release
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             await github.rest.repos.createRelease({
