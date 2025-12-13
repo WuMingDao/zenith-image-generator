@@ -36,6 +36,6 @@
     "turbo": "^2.3.3",
     "typescript": "^5.7.2",
     "vitest": "^4.0.15",
-    "wrangler": "^3.90.0"
+    "wrangler": "^4.54.0"
   }
 }
