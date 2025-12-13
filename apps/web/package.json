@@ -33,7 +33,7 @@
     "react-router-dom": "^7.10.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss": "^4.1.17"
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@types/dagre": "^0.7.53",
