@@ -96,7 +96,9 @@
     "config": "Config",
     "enterPrompt": "Enter prompt...",
     "doubleClickEdit": "Double-click to edit",
-    "doubleClickEnlarge": "Double-click to enlarge"
+    "doubleClickEnlarge": "Double-click to enlarge",
+    "deleteConfigConfirm": "Delete this config and all its images?",
+    "deleteImageConfirm": "Delete this image?"
   },
   "storage": {
     "limitReached": "Storage Limit Reached",

@@ -96,7 +96,9 @@
     "config": "配置",
     "enterPrompt": "输入提示词...",
     "doubleClickEdit": "双击编辑",
-    "doubleClickEnlarge": "双击放大"
+    "doubleClickEnlarge": "双击放大",
+    "deleteConfigConfirm": "删除此配置及其所有图片？",
+    "deleteImageConfirm": "删除此图片？"
   },
   "storage": {
     "limitReached": "存储空间已满",

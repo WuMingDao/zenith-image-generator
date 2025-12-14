@@ -99,6 +99,7 @@ export interface FlowState {
   clearStorageLimitState: () => void
 
   deleteConfig: (configId: string) => void
+  deleteImage: (imageId: string) => void
   clearAll: () => void
 
   // Computed
@@ -357,6 +358,22 @@ export const useFlowStore = create<FlowState>()(
           set({
             configNodes: state.configNodes.filter((n) => n.id !== configId),
             imageNodes: state.imageNodes.filter((n) => n.data.configId !== configId),
+          })
+        },
+
+        deleteImage: (imageId) => {
+          const state = get()
+          const imageNode = state.imageNodes.find((n) => n.id === imageId)
+
+          if (!imageNode) return
+
+          // Delete blob if exists
+          if (imageNode.data.imageBlobId) {
+            deleteBlobs([imageNode.data.imageBlobId]).catch(console.error)
+          }
+
+          set({
+            imageNodes: state.imageNodes.filter((n) => n.id !== imageId),
           })
         },
 

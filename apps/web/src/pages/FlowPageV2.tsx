@@ -19,6 +19,7 @@ import { ConfigNode } from '@/components/flow/ConfigNode'
 import { FlowInput } from '@/components/flow/FlowInput'
 import { ImageNode } from '@/components/flow/ImageNode'
 import { Lightbox } from '@/components/flow/Lightbox'
+import { type ContextMenuState, NodeContextMenu } from '@/components/flow/NodeContextMenu'
 import { StorageLimitModal } from '@/components/flow/StorageLimitModal'
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
 import { optimizePrompt, translatePrompt } from '@/lib/api'
@@ -58,10 +59,15 @@ function FlowCanvas() {
   const storageLimitState = useFlowStore((s) => s.storageLimitState)
   const clearStorageLimitState = useFlowStore((s) => s.clearStorageLimitState)
   const updateImageGenerated = useFlowStore((s) => s.updateImageGenerated)
+  const deleteConfig = useFlowStore((s) => s.deleteConfig)
+  const deleteImage = useFlowStore((s) => s.deleteImage)
 
   // Download state
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState('')
+
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
 
   // Compute nodes from state
   const nodes = useMemo(() => {
@@ -279,6 +285,33 @@ function FlowCanvas() {
     [loadConfigForEditing]
   )
 
+  // Handle node right click - show context menu
+  const onNodeContextMenu = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      // Prevent default context menu
+      event.preventDefault()
+
+      // Don't show context menu for preview nodes
+      if (node.data.isPreview) return
+
+      // Only show for config and image nodes
+      if (node.type !== 'configNode' && node.type !== 'imageNode') return
+
+      setContextMenu({
+        nodeId: node.id,
+        nodeType: node.type as 'configNode' | 'imageNode',
+        x: event.clientX,
+        y: event.clientY,
+      })
+    },
+    []
+  )
+
+  // Close context menu
+  const closeContextMenu = useCallback(() => {
+    setContextMenu(null)
+  }, [])
+
   // Handle clear all
   const handleClearAll = useCallback(() => {
     if (confirm(t('flow.clearConfirm'))) {
@@ -385,6 +418,9 @@ function FlowCanvas() {
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
         onNodeDoubleClick={onNodeDoubleClick}
+        onNodeContextMenu={onNodeContextMenu}
+        onPaneClick={closeContextMenu}
+        onPaneContextMenu={closeContextMenu}
         fitView={false}
         minZoom={0.2}
         maxZoom={2}
@@ -543,6 +579,16 @@ function FlowCanvas() {
         onCancel={clearStorageLimitState}
         isDownloading={isDownloading}
       />
+
+      {/* Node Context Menu */}
+      {contextMenu && (
+        <NodeContextMenu
+          menu={contextMenu}
+          onClose={closeContextMenu}
+          onDeleteConfig={deleteConfig}
+          onDeleteImage={deleteImage}
+        />
+      )}
     </div>
   )
 }
