@@ -6,4 +6,6 @@ export * from './api'
 export * from './error'
 // 图片类型
 export * from './image'
+// LLM 类型
+export * from './llm'
 export * from './provider'

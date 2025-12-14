@@ -9,9 +9,14 @@ import type {
   ApiErrorResponse,
   GenerateRequest,
   GenerateSuccessResponse,
+  LLMProviderType,
+  OptimizeRequest,
+  OptimizeResponse,
+  TranslateResponse,
   UpscaleRequest,
   UpscaleResponse,
 } from '@z-image/shared'
+import { LLM_PROVIDER_CONFIGS } from '@z-image/shared'
 import { PROVIDER_CONFIGS, type ProviderType } from './constants'
 
 const API_URL = import.meta.env.VITE_API_URL || ''
@@ -179,6 +184,110 @@ export async function upscaleImage(
     }
 
     return { success: true, data: data as UpscaleResponse }
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Network error',
+    }
+  }
+}
+
+/** Optimize prompt options */
+export interface OptimizeOptions {
+  /** The prompt to optimize */
+  prompt: string
+  /** LLM provider (default: pollinations) */
+  provider?: LLMProviderType
+  /** Output language (default: en) */
+  lang?: 'en' | 'zh'
+  /** Specific model to use */
+  model?: string
+  /** Custom system prompt */
+  systemPrompt?: string
+}
+
+/**
+ * Optimize a prompt using LLM
+ */
+export async function optimizePrompt(
+  options: OptimizeOptions,
+  token?: string
+): Promise<ApiResponse<OptimizeResponse>> {
+  const { prompt, provider = 'pollinations', lang = 'en', model, systemPrompt } = options
+
+  const providerConfig = LLM_PROVIDER_CONFIGS[provider]
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  }
+
+  // Add auth header if provider requires it and token is provided
+  if (token && providerConfig?.needsAuth && providerConfig?.authHeader) {
+    headers[providerConfig.authHeader] = token
+  }
+
+  const body: OptimizeRequest = {
+    prompt,
+    provider,
+    lang,
+    model,
+    systemPrompt,
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/optimize`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      const errorInfo = parseErrorResponse(data)
+      return {
+        success: false,
+        error: getErrorMessage(errorInfo),
+        errorInfo,
+      }
+    }
+
+    return { success: true, data: data as OptimizeResponse }
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Network error',
+    }
+  }
+}
+
+/**
+ * Translate a prompt from Chinese to English
+ * Uses Pollinations AI with openai-fast model (free, no auth required)
+ */
+export async function translatePrompt(prompt: string): Promise<ApiResponse<TranslateResponse>> {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/translate`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ prompt }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      const errorInfo = parseErrorResponse(data)
+      return {
+        success: false,
+        error: getErrorMessage(errorInfo),
+        errorInfo,
+      }
+    }
+
+    return { success: true, data: data as TranslateResponse }
   } catch (err) {
     return {
       success: false,

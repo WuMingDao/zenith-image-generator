@@ -6,6 +6,8 @@
  */
 
 import {
+  DEFAULT_OPTIMIZE_SYSTEM_PROMPT,
+  DEFAULT_TRANSLATE_SYSTEM_PROMPT,
   Errors,
   type GenerateRequest,
   type GenerateSuccessResponse,
@@ -14,9 +16,16 @@ import {
   HF_SPACES,
   type ImageDetails,
   isAllowedImageUrl,
+  LLM_PROVIDER_CONFIGS,
+  type LLMProviderType,
   MODEL_CONFIGS,
+  type OptimizeRequest,
+  type OptimizeResponse,
   PROVIDER_CONFIGS,
   type ProviderType,
+  TRANSLATION_CONFIG,
+  type TranslateRequest,
+  type TranslateResponse,
   validateDimensions,
   validatePrompt,
   validateScale,
@@ -24,6 +33,7 @@ import {
 } from '@z-image/shared'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { getLLMProvider, hasLLMProvider } from './llm-providers'
 import {
   bodyLimit,
   errorHandler,
@@ -52,7 +62,14 @@ export function createApp(config: AppConfig = {}) {
   const corsMiddleware = cors({
     origin: origins,
     allowMethods: ['GET', 'POST', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'X-API-Key', 'X-HF-Token', 'X-MS-Token', 'X-Request-ID'],
+    allowHeaders: [
+      'Content-Type',
+      'X-API-Key',
+      'X-HF-Token',
+      'X-MS-Token',
+      'X-DeepSeek-Token',
+      'X-Request-ID',
+    ],
   })
 
   // Global error handlers
@@ -69,11 +86,15 @@ export function createApp(config: AppConfig = {}) {
   app.use('/generate', timeout(120000))
   app.use('/generate-hf', timeout(120000))
   app.use('/upscale', timeout(120000))
+  app.use('/optimize', timeout(60000)) // 60 seconds for LLM
+  app.use('/translate', timeout(30000)) // 30 seconds for translation
 
   // Apply body limit (50KB for most endpoints)
   app.use('/generate', bodyLimit(50 * 1024))
   app.use('/generate-hf', bodyLimit(50 * 1024))
   app.use('/upscale', bodyLimit(50 * 1024))
+  app.use('/optimize', bodyLimit(50 * 1024))
+  app.use('/translate', bodyLimit(20 * 1024)) // 20KB for translation
 
   // Health check
   app.get('/', (c) => {
@@ -118,6 +139,142 @@ export function createApp(config: AppConfig = {}) {
       features: m.features,
     }))
     return c.json({ models })
+  })
+
+  // Get all LLM providers
+  app.get('/llm-providers', (c) => {
+    const providers = Object.values(LLM_PROVIDER_CONFIGS).map((p) => ({
+      id: p.id,
+      name: p.name,
+      needsAuth: p.needsAuth,
+      authHeader: p.authHeader,
+      models: p.models,
+    }))
+    return c.json({ providers })
+  })
+
+  // Prompt optimization endpoint
+  app.post('/optimize', async (c) => {
+    let body: OptimizeRequest
+    try {
+      body = await c.req.json()
+    } catch {
+      return sendError(c, Errors.invalidParams('body', 'Invalid JSON body'))
+    }
+
+    const { prompt, provider = 'pollinations', lang = 'en', model, systemPrompt } = body
+
+    // Validate prompt
+    if (!prompt || typeof prompt !== 'string') {
+      return sendError(c, Errors.invalidPrompt('Prompt is required'))
+    }
+    if (prompt.length > 4000) {
+      return sendError(c, Errors.invalidPrompt('Prompt must be less than 4000 characters'))
+    }
+
+    // Validate provider
+    if (!hasLLMProvider(provider)) {
+      return sendError(c, Errors.invalidProvider(provider))
+    }
+
+    // Get provider config
+    const providerConfig = LLM_PROVIDER_CONFIGS[provider as LLMProviderType]
+
+    // Get auth token if required
+    let authToken: string | undefined
+    if (providerConfig.needsAuth && providerConfig.authHeader) {
+      authToken = c.req.header(providerConfig.authHeader)
+      if (!authToken) {
+        return sendError(c, Errors.authRequired(providerConfig.name))
+      }
+    }
+
+    // Build final system prompt with language instruction
+    const langInstruction = lang === 'zh' ? '请用中文输出。' : 'Ensure the output is in English.'
+    const finalSystemPrompt = `${systemPrompt || DEFAULT_OPTIMIZE_SYSTEM_PROMPT}\n\n${langInstruction}`
+
+    try {
+      const llmProvider = getLLMProvider(provider as LLMProviderType)
+      const result = await llmProvider.complete({
+        prompt,
+        systemPrompt: finalSystemPrompt,
+        model,
+        authToken,
+        maxTokens: 1000,
+      })
+
+      const response: OptimizeResponse = {
+        optimized: result.content,
+        provider: provider as LLMProviderType,
+        model: result.model,
+      }
+
+      return c.json(response)
+    } catch (err) {
+      return sendError(c, err)
+    }
+  })
+
+  // Prompt translation endpoint (Chinese to English)
+  app.post('/translate', async (c) => {
+    let body: TranslateRequest
+    try {
+      body = await c.req.json()
+    } catch {
+      return sendError(c, Errors.invalidParams('body', 'Invalid JSON body'))
+    }
+
+    const { prompt } = body
+
+    // Validate prompt
+    if (!prompt || typeof prompt !== 'string') {
+      return sendError(c, Errors.invalidPrompt('Prompt is required'))
+    }
+    if (prompt.length > 2000) {
+      return sendError(c, Errors.invalidPrompt('Prompt must be less than 2000 characters'))
+    }
+
+    try {
+      // Use Pollinations API with openai-fast model for translation
+      const response = await fetch(TRANSLATION_CONFIG.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: TRANSLATION_CONFIG.model,
+          messages: [
+            { role: 'system', content: DEFAULT_TRANSLATE_SYSTEM_PROMPT },
+            { role: 'user', content: prompt },
+          ],
+          max_tokens: 1000,
+          temperature: 0.3, // Lower temperature for more accurate translation
+        }),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error')
+        throw Errors.providerError('Translation', errorText)
+      }
+
+      const data = (await response.json()) as {
+        choices?: Array<{ message?: { content?: string } }>
+      }
+      const translated = data.choices?.[0]?.message?.content?.trim()
+
+      if (!translated) {
+        throw Errors.providerError('Translation', 'Empty response from translation service')
+      }
+
+      const translateResponse: TranslateResponse = {
+        translated,
+        model: TRANSLATION_CONFIG.model,
+      }
+
+      return c.json(translateResponse)
+    } catch (err) {
+      return sendError(c, err)
+    }
   })
 
   // Unified generate endpoint
