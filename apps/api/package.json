@@ -17,7 +17,7 @@
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "@z-image/shared": "workspace:*",
-    "hono": "^4.11.0"
+    "hono": "^4.11.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251213.0",
