@@ -24,8 +24,8 @@
     "clsx": "^2.1.1",
     "dagre": "^0.8.5",
     "framer-motion": "^12.23.26",
-    "hono": "^4.11.0",
-    "i18next": "^25.7.2",
+    "hono": "^4.11.1",
+    "i18next": "^25.7.3",
     "i18next-browser-languagedetector": "^8.2.0",
     "idb": "^8.0.3",
     "jszip": "^3.10.1",
@@ -47,10 +47,10 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
-    "@vitest/browser": "^4.0.15",
+    "@vitest/browser": "^4.0.16",
     "babel-plugin-react-compiler": "^1.0.0",
     "jsdom": "^27.3.0",
     "typescript": "~5.9.3",
-    "vite": "^7.2.7"
+    "vite": "^7.3.0"
   }
 }
