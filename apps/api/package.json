@@ -16,15 +16,15 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "@hono/swagger-ui": "^0.5.2",
-    "@hono/zod-openapi": "^1.1.5",
-    "@hono/zod-validator": "^0.7.5",
+    "@hono/swagger-ui": "^0.5.3",
+    "@hono/zod-openapi": "^1.2.0",
+    "@hono/zod-validator": "^0.7.6",
     "@z-image/shared": "workspace:*",
-    "hono": "^4.11.0",
+    "hono": "^4.11.3",
     "zod": "^4.2.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251213.0",
+    "@cloudflare/workers-types": "^4.20251229.0",
     "@types/node": "^24.10.1",
     "tsx": "^4.19.2",
     "wrangler": "^4.54.0"
