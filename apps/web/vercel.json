@@ -8,6 +8,10 @@
     {
       "source": "/api/:path*",
       "destination": "/api/:path*"
+    },
+    {
+      "source": "/v1/:path*",
+      "destination": "/api/v1/:path*"
     }
   ],
   "headers": [
@@ -18,7 +22,7 @@
         { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
         {
           "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, X-API-Key, X-HF-Token, X-MS-Token"
+          "value": "Content-Type, Authorization, X-Request-ID"
         }
       ]
     }

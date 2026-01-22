@@ -20,4 +20,16 @@ const corsOrigins = process.env.CORS_ORIGINS
 
 const app = createApp({ corsOrigins })
 
-export default handle(app)
+const handler = handle(app)
+
+function stripApiPrefix(req: Request): Request {
+  const url = new URL(req.url)
+  if (url.pathname === '/api') url.pathname = '/'
+  if (url.pathname.startsWith('/api/')) {
+    url.pathname = url.pathname.slice('/api'.length)
+    if (!url.pathname) url.pathname = '/'
+  }
+  return new Request(url.toString(), req)
+}
+
+export default (req: Request) => handler(stripApiPrefix(req))
