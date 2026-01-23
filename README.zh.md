@@ -20,7 +20,7 @@
 
 ## 功能特性
 
-- **多 AI 提供商** - Gitee AI、HuggingFace Spaces、ModelScope
+- **多 AI 提供商** - A4F、Gitee AI、HuggingFace Spaces、ModelScope
 - **深色模式 UI** - Gradio 风格毛玻璃效果
 - **灵活尺寸** - 多种宽高比 (1:1, 16:9, 9:16, 4:3 等)
 - **安全存储** - API Key 使用 AES-256-GCM 加密
@@ -56,6 +56,18 @@ token_1, token_2, token_3
 
 - Node.js 18+ / pnpm 9+
 - [Gitee AI API Key](https://ai.gitee.com)
+- [A4F API Key](https://www.a4f.co)（可选）
+
+### A4F（api.a4f.co）渠道：注册获取 API Key
+
+1. 打开 https://www.a4f.co/ 注册/登录
+2. 在 A4F 控制台创建 API Key（参考官方文档）：https://www.a4f.co/docs
+3. 在 Zenith 设置中选择服务商 `A4F`，把 API Key 粘贴到 Token 输入框
+
+说明：
+
+- A4F 的模型必须带 provider 前缀（例如 `provider-4/imagen-3.5`），Zenith 已在模型下拉框内提供可用项。
+- 如直接调用 OpenAI 兼容接口，请使用 `model: "a4f/provider-4/imagen-3.5"`，并在请求头中使用 `Authorization: Bearer a4f:<token>`。
 
 ### 一键部署
 
@@ -118,6 +130,7 @@ curl -X POST https://your-project.pages.dev/v1/images/generations \
 说明：
 
 - Provider 路由通过 `model` 前缀区分：
+  - `a4f/...` -> A4F（`Authorization: Bearer a4f:...`）
   - `gitee/...` -> Gitee AI（`Authorization: Bearer gitee:...`）
   - `ms/...` -> ModelScope（`Authorization: Bearer ms:...`）
   - 无前缀 -> HuggingFace（可选 token；`Authorization: Bearer <token>` 或 `Authorization: Bearer hf:<token>`）

@@ -20,7 +20,7 @@ batch generation, and one-click deployment to Cloudflare Pages.
 
 ## Features
 
-- **Multiple AI Providers** - Gitee AI, HuggingFace Spaces, ModelScope
+- **Multiple AI Providers** - A4F, Gitee AI, HuggingFace Spaces, ModelScope
 - **Dark Mode UI** - Gradio-style with frosted glass effects
 - **Flexible Sizing** - Multiple aspect ratios (1:1, 16:9, 9:16, 4:3, etc.)
 - **Secure Storage** - API keys encrypted with AES-256-GCM
@@ -58,6 +58,18 @@ token_1, token_2, token_3
 
 - Node.js 18+ / pnpm 9+
 - [Gitee AI API Key](https://ai.gitee.com)
+- [A4F API Key](https://www.a4f.co) (optional)
+
+### A4F (api.a4f.co) API Key
+
+1. Register / login at https://www.a4f.co/
+2. Create an API key in the A4F dashboard (see docs): https://www.a4f.co/docs
+3. In Zenith Settings, select provider `A4F` and paste the key into the Token field
+
+Notes:
+
+- A4F requires a provider-prefixed model id (e.g. `provider-4/imagen-3.5`). Zenith exposes these in the model dropdown.
+- If you call the OpenAI-compatible endpoint directly, use `model: "a4f/provider-4/imagen-3.5"` and `Authorization: Bearer a4f:<token>`.
 
 ### One-Click Deploy
 
@@ -111,6 +123,7 @@ Notes:
 - The API returns the **raw provider image URL** (e.g. HuggingFace Space `gradio_api/file=...`).
 - Some provider URLs are **temporary** (HF Space files often expire around 24 hours).
 - Provider routing is via the `model` prefix:
+  - `a4f/...` -> A4F (`Authorization: Bearer a4f:...`)
   - `gitee/...` -> Gitee AI (`Authorization: Bearer gitee:...`)
   - `ms/...` -> ModelScope (`Authorization: Bearer ms:...`)
   - no prefix -> HuggingFace (token optional; `Authorization: Bearer <token>` or `Authorization: Bearer hf:<token>`)
