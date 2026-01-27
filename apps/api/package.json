@@ -20,7 +20,7 @@
     "@hono/zod-openapi": "^1.2.0",
     "@hono/zod-validator": "^0.7.6",
     "@z-image/shared": "workspace:*",
-    "hono": "^4.11.4",
+    "hono": "^4.11.7",
     "zod": "^4.3.5"
   },
   "devDependencies": {
