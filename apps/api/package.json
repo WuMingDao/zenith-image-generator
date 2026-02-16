@@ -17,16 +17,16 @@
   "dependencies": {
     "@hono/node-server": "^1.19.9",
     "@hono/swagger-ui": "^0.5.3",
-    "@hono/zod-openapi": "^1.2.0",
+    "@hono/zod-openapi": "^1.2.2",
     "@hono/zod-validator": "^0.7.6",
     "@z-image/shared": "workspace:*",
-    "hono": "^4.11.4",
-    "zod": "^4.3.5"
+    "hono": "^4.11.9",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260115.0",
+    "@cloudflare/workers-types": "^4.20260214.0",
     "@types/node": "^24.10.1",
     "tsx": "^4.19.2",
-    "wrangler": "^4.59.2"
+    "wrangler": "^4.65.0"
   }
 }
