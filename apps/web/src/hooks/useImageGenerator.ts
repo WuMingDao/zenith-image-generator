@@ -27,7 +27,9 @@ import {
   getDefaultLLMModel,
   getDefaultModel,
   getEffectiveSystemPrompt,
+  getLLMProviderBaseUrl,
   getModelsByProvider,
+  isDirectOpenAICompatibleLLMProvider,
   type LLMProviderType,
   type LLMSettings,
   loadLLMSettings,
@@ -466,19 +468,29 @@ export function useImageGenerator() {
     try {
       const llmProvider = llmSettings.llmProvider
       const systemPrompt = `${getEffectiveSystemPrompt(llmSettings.customSystemPrompt)}\n\nEnsure the output is in English.`
-      const modelId =
-        llmProvider === 'custom' ? llmSettings.customOptimizeConfig.model : llmSettings.llmModel
+      const modelId = isDirectOpenAICompatibleLLMProvider(llmProvider)
+        ? llmSettings.customOptimizeConfig.model
+        : llmSettings.llmModel
 
       let optimized: string
 
-      if (llmProvider === 'custom') {
-        const { baseUrl, apiKey, model } = llmSettings.customOptimizeConfig
-        if (!baseUrl || !apiKey || !model)
-          throw new Error('Please configure custom provider URL, API key, and model')
+      if (isDirectOpenAICompatibleLLMProvider(llmProvider)) {
+        const { apiKey, model } = llmSettings.customOptimizeConfig
+        const baseUrl = getLLMProviderBaseUrl(llmProvider, llmSettings.customOptimizeConfig)
+        const resolvedModel =
+          model || (llmProvider === 'aihubmix' ? getDefaultLLMModel(llmProvider) : '')
+        if (!apiKey || !resolvedModel) {
+          throw new Error(
+            llmProvider === 'aihubmix'
+              ? 'Please configure your AIHubMix API key and model'
+              : 'Please configure custom provider URL, API key, and model'
+          )
+        }
+        if (!baseUrl) throw new Error('Please configure custom provider URL')
         const client = createOpenAIClientForBaseUrl(baseUrl)
         const resp = await client.chatCompletions(
           {
-            model,
+            model: resolvedModel,
             messages: [
               { role: 'system', content: systemPrompt },
               { role: 'user', content: prompt },
@@ -563,21 +575,29 @@ export function useImageGenerator() {
     try {
       const llmProvider = llmSettings.translateProvider
       const systemPrompt = DEFAULT_TRANSLATE_SYSTEM_PROMPT
-      const modelId =
-        llmProvider === 'custom'
-          ? llmSettings.customTranslateConfig.model
-          : llmSettings.translateModel
+      const modelId = isDirectOpenAICompatibleLLMProvider(llmProvider)
+        ? llmSettings.customTranslateConfig.model
+        : llmSettings.translateModel
 
       let translated: string
 
-      if (llmProvider === 'custom') {
-        const { baseUrl, apiKey, model } = llmSettings.customTranslateConfig
-        if (!baseUrl || !apiKey || !model)
-          throw new Error('Please configure custom provider URL, API key, and model')
+      if (isDirectOpenAICompatibleLLMProvider(llmProvider)) {
+        const { apiKey, model } = llmSettings.customTranslateConfig
+        const baseUrl = getLLMProviderBaseUrl(llmProvider, llmSettings.customTranslateConfig)
+        const resolvedModel =
+          model || (llmProvider === 'aihubmix' ? getDefaultLLMModel(llmProvider) : '')
+        if (!apiKey || !resolvedModel) {
+          throw new Error(
+            llmProvider === 'aihubmix'
+              ? 'Please configure your AIHubMix API key and model'
+              : 'Please configure custom provider URL, API key, and model'
+          )
+        }
+        if (!baseUrl) throw new Error('Please configure custom provider URL')
         const client = createOpenAIClientForBaseUrl(baseUrl)
         const resp = await client.chatCompletions(
           {
-            model,
+            model: resolvedModel,
             messages: [
               { role: 'system', content: systemPrompt },
               { role: 'user', content: prompt },

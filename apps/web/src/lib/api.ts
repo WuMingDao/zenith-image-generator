@@ -143,8 +143,6 @@ export async function fetchOpenAIModels(
   apiKey: string
 ): Promise<OpenAIModelInfo[]> {
   const client = createOpenAIClientForBaseUrl(baseUrl)
-  // client expects baseURL without /v1 because it appends /v1/...
-  // so we pass normalized base and strip /v1 for consistency.
   return client.listModels(apiKey).catch(async (err) => {
     if (err instanceof OpenAIAPIError) throw err
     throw new OpenAIAPIError(err instanceof Error ? err.message : 'Failed to fetch models', 500)

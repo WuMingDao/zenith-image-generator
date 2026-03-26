@@ -75,6 +75,14 @@ export const LLM_PROVIDER_CONFIGS: Record<LLMProviderType, LLMProviderConfig> = 
       { id: 'Qwen/Qwen2.5-72B-Instruct', name: 'Qwen 2.5 72B', description: 'Alibaba Qwen model' },
     ],
   },
+  aihubmix: {
+    id: 'aihubmix',
+    name: 'AIHubMix',
+    url: 'https://aihubmix.com/v1/chat/completions',
+    defaultModel: 'gpt-4o-mini',
+    needsAuth: true,
+    models: [],
+  },
   deepseek: {
     id: 'deepseek',
     name: 'DeepSeek Official',

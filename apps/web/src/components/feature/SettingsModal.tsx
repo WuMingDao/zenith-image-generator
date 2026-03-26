@@ -16,7 +16,10 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { fetchOpenAIModels } from '@/lib/api'
 import {
+  AIHUBMIX_BASE_URL,
   getLLMModels,
+  getLLMProviderBaseUrl,
+  isDirectOpenAICompatibleLLMProvider,
   LLM_PROVIDER_OPTIONS,
   type LLMProviderType,
   type LLMSettings,
@@ -88,6 +91,18 @@ export function SettingsModal({
   const [isLoadingTranslateModels, setIsLoadingTranslateModels] = useState(false)
   const [optimizeModelsError, setOptimizeModelsError] = useState<string | null>(null)
   const [translateModelsError, setTranslateModelsError] = useState<string | null>(null)
+  const optimizeUsesDirectProvider = isDirectOpenAICompatibleLLMProvider(llmSettings.llmProvider)
+  const translateUsesDirectProvider = isDirectOpenAICompatibleLLMProvider(
+    llmSettings.translateProvider
+  )
+  const optimizeBaseUrl = getLLMProviderBaseUrl(
+    llmSettings.llmProvider,
+    llmSettings.customOptimizeConfig
+  )
+  const translateBaseUrl = getLLMProviderBaseUrl(
+    llmSettings.translateProvider,
+    llmSettings.customTranslateConfig
+  )
 
   // Persist tab selection
   useEffect(() => {
@@ -96,7 +111,8 @@ export function SettingsModal({
 
   // Fetch custom models for optimize provider
   const fetchOptimizeModels = useCallback(async () => {
-    const { baseUrl, apiKey } = llmSettings.customOptimizeConfig
+    const baseUrl = getLLMProviderBaseUrl(llmSettings.llmProvider, llmSettings.customOptimizeConfig)
+    const { apiKey } = llmSettings.customOptimizeConfig
     if (!baseUrl || !apiKey) {
       setOptimizeCustomModels([])
       return
@@ -118,11 +134,15 @@ export function SettingsModal({
     }
 
     setIsLoadingOptimizeModels(false)
-  }, [llmSettings.customOptimizeConfig, setCustomOptimizeConfig])
+  }, [llmSettings.customOptimizeConfig, llmSettings.llmProvider, setCustomOptimizeConfig])
 
   // Fetch custom models for translate provider
   const fetchTranslateModels = useCallback(async () => {
-    const { baseUrl, apiKey } = llmSettings.customTranslateConfig
+    const baseUrl = getLLMProviderBaseUrl(
+      llmSettings.translateProvider,
+      llmSettings.customTranslateConfig
+    )
+    const { apiKey } = llmSettings.customTranslateConfig
     if (!baseUrl || !apiKey) {
       setTranslateCustomModels([])
       return
@@ -144,12 +164,13 @@ export function SettingsModal({
     }
 
     setIsLoadingTranslateModels(false)
-  }, [llmSettings.customTranslateConfig, setCustomTranslateConfig])
+  }, [llmSettings.customTranslateConfig, llmSettings.translateProvider, setCustomTranslateConfig])
 
-  // Auto-fetch models when baseUrl and apiKey are filled
+  // Auto-fetch models when the provider uses a fixed or custom OpenAI-compatible URL.
   useEffect(() => {
-    if (llmSettings.llmProvider === 'custom') {
-      const { baseUrl, apiKey } = llmSettings.customOptimizeConfig
+    if (optimizeUsesDirectProvider) {
+      const { apiKey } = llmSettings.customOptimizeConfig
+      const baseUrl = getLLMProviderBaseUrl(llmSettings.llmProvider, llmSettings.customOptimizeConfig)
       if (baseUrl && apiKey && optimizeCustomModels.length === 0 && !isLoadingOptimizeModels) {
         fetchOptimizeModels()
       }
@@ -160,11 +181,16 @@ export function SettingsModal({
     optimizeCustomModels.length,
     isLoadingOptimizeModels,
     fetchOptimizeModels,
+    optimizeUsesDirectProvider,
   ])
 
   useEffect(() => {
-    if (llmSettings.translateProvider === 'custom') {
-      const { baseUrl, apiKey } = llmSettings.customTranslateConfig
+    if (translateUsesDirectProvider) {
+      const { apiKey } = llmSettings.customTranslateConfig
+      const baseUrl = getLLMProviderBaseUrl(
+        llmSettings.translateProvider,
+        llmSettings.customTranslateConfig
+      )
       if (baseUrl && apiKey && translateCustomModels.length === 0 && !isLoadingTranslateModels) {
         fetchTranslateModels()
       }
@@ -175,6 +201,7 @@ export function SettingsModal({
     translateCustomModels.length,
     isLoadingTranslateModels,
     fetchTranslateModels,
+    translateUsesDirectProvider,
   ])
 
   // API Config computed values
@@ -350,30 +377,42 @@ export function SettingsModal({
               </div>
 
               {/* Custom Provider Config */}
-              {llmSettings.llmProvider === 'custom' ? (
+              {optimizeUsesDirectProvider ? (
                 <>
-                  <div>
-                    <Label className="text-zinc-400 text-xs">API Base URL</Label>
-                    <Input
-                      type="text"
-                      placeholder="https://api.openai.com/v1"
-                      value={llmSettings.customOptimizeConfig.baseUrl}
-                      onChange={(e) => {
-                        setCustomOptimizeConfig({ baseUrl: e.target.value })
-                        setOptimizeCustomModels([]) // Clear models when URL changes
-                      }}
-                      className="mt-1 bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-xs"
-                    />
-                  </div>
+                  {llmSettings.llmProvider === 'custom' ? (
+                    <div>
+                      <Label className="text-zinc-400 text-xs">API Base URL</Label>
+                      <Input
+                        type="text"
+                        placeholder="https://api.openai.com/v1"
+                        value={llmSettings.customOptimizeConfig.baseUrl}
+                        onChange={(e) => {
+                          setCustomOptimizeConfig({ baseUrl: e.target.value })
+                          setOptimizeCustomModels([])
+                        }}
+                        className="mt-1 bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-xs"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <Label className="text-zinc-400 text-xs">API Base URL</Label>
+                      <Input
+                        type="text"
+                        value={AIHUBMIX_BASE_URL}
+                        readOnly
+                        className="mt-1 bg-zinc-950 border-zinc-800 text-zinc-500 text-xs"
+                      />
+                    </div>
+                  )}
                   <div>
                     <Label className="text-zinc-400 text-xs">API Key</Label>
                     <Input
                       type="password"
-                      placeholder="sk-..."
+                      placeholder={llmSettings.llmProvider === 'aihubmix' ? 'ahm-...' : 'sk-...'}
                       value={llmSettings.customOptimizeConfig.apiKey}
                       onChange={(e) => {
                         setCustomOptimizeConfig({ apiKey: e.target.value })
-                        setOptimizeCustomModels([]) // Clear models when key changes
+                        setOptimizeCustomModels([])
                       }}
                       className="mt-1 bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-xs"
                     />
@@ -381,8 +420,7 @@ export function SettingsModal({
                   <div>
                     <div className="flex items-center justify-between">
                       <Label className="text-zinc-400 text-xs">Model</Label>
-                      {llmSettings.customOptimizeConfig.baseUrl &&
-                        llmSettings.customOptimizeConfig.apiKey && (
+                      {optimizeBaseUrl && llmSettings.customOptimizeConfig.apiKey && (
                           <Button
                             type="button"
                             variant="ghost"
@@ -526,30 +564,44 @@ export function SettingsModal({
               </div>
 
               {/* Custom Provider Config */}
-              {llmSettings.translateProvider === 'custom' ? (
+              {translateUsesDirectProvider ? (
                 <>
-                  <div>
-                    <Label className="text-zinc-400 text-xs">API Base URL</Label>
-                    <Input
-                      type="text"
-                      placeholder="https://api.openai.com/v1"
-                      value={llmSettings.customTranslateConfig.baseUrl}
-                      onChange={(e) => {
-                        setCustomTranslateConfig({ baseUrl: e.target.value })
-                        setTranslateCustomModels([]) // Clear models when URL changes
-                      }}
-                      className="mt-1 bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-xs"
-                    />
-                  </div>
+                  {llmSettings.translateProvider === 'custom' ? (
+                    <div>
+                      <Label className="text-zinc-400 text-xs">API Base URL</Label>
+                      <Input
+                        type="text"
+                        placeholder="https://api.openai.com/v1"
+                        value={llmSettings.customTranslateConfig.baseUrl}
+                        onChange={(e) => {
+                          setCustomTranslateConfig({ baseUrl: e.target.value })
+                          setTranslateCustomModels([])
+                        }}
+                        className="mt-1 bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-xs"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <Label className="text-zinc-400 text-xs">API Base URL</Label>
+                      <Input
+                        type="text"
+                        value={AIHUBMIX_BASE_URL}
+                        readOnly
+                        className="mt-1 bg-zinc-950 border-zinc-800 text-zinc-500 text-xs"
+                      />
+                    </div>
+                  )}
                   <div>
                     <Label className="text-zinc-400 text-xs">API Key</Label>
                     <Input
                       type="password"
-                      placeholder="sk-..."
+                      placeholder={
+                        llmSettings.translateProvider === 'aihubmix' ? 'ahm-...' : 'sk-...'
+                      }
                       value={llmSettings.customTranslateConfig.apiKey}
                       onChange={(e) => {
                         setCustomTranslateConfig({ apiKey: e.target.value })
-                        setTranslateCustomModels([]) // Clear models when key changes
+                        setTranslateCustomModels([])
                       }}
                       className="mt-1 bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-xs"
                     />
@@ -557,8 +609,7 @@ export function SettingsModal({
                   <div>
                     <div className="flex items-center justify-between">
                       <Label className="text-zinc-400 text-xs">Model</Label>
-                      {llmSettings.customTranslateConfig.baseUrl &&
-                        llmSettings.customTranslateConfig.apiKey && (
+                      {translateBaseUrl && llmSettings.customTranslateConfig.apiKey && (
                           <Button
                             type="button"
                             variant="ghost"

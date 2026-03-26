@@ -32,7 +32,9 @@ import {
   getDefaultLLMModel,
   getDefaultModel,
   getEffectiveSystemPrompt,
+  getLLMProviderBaseUrl,
   getModelsByProvider,
+  isDirectOpenAICompatibleLLMProvider,
   type LLMProviderType,
   type LLMSettings,
   loadLLMSettings,
@@ -241,16 +243,27 @@ function FlowCanvas() {
         const provider = llmSettings.llmProvider
         const systemPrompt = `${getEffectiveSystemPrompt(llmSettings.customSystemPrompt)}\n\nEnsure the output is in English.`
 
-        if (provider === 'custom') {
-          const { baseUrl, apiKey, model } = llmSettings.customOptimizeConfig
-          if (!baseUrl || !apiKey || !model) {
-            toast.error('Please configure custom provider URL, API key, and model')
+        if (isDirectOpenAICompatibleLLMProvider(provider)) {
+          const { apiKey, model } = llmSettings.customOptimizeConfig
+          const baseUrl = getLLMProviderBaseUrl(provider, llmSettings.customOptimizeConfig)
+          const resolvedModel =
+            model || (provider === 'aihubmix' ? getDefaultLLMModel(provider) : '')
+          if (!apiKey || !resolvedModel) {
+            toast.error(
+              provider === 'aihubmix'
+                ? 'Please configure your AIHubMix API key and model'
+                : 'Please configure custom provider URL, API key, and model'
+            )
+            return null
+          }
+          if (!baseUrl) {
+            toast.error('Please configure custom provider URL')
             return null
           }
           const client = createOpenAIClientForBaseUrl(baseUrl)
           const resp = await client.chatCompletions(
             {
-              model,
+              model: resolvedModel,
               messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: prompt },
@@ -318,16 +331,27 @@ function FlowCanvas() {
       try {
         const provider = llmSettings.translateProvider
 
-        if (provider === 'custom') {
-          const { baseUrl, apiKey, model } = llmSettings.customTranslateConfig
-          if (!baseUrl || !apiKey || !model) {
-            toast.error('Please configure custom provider URL, API key, and model')
+        if (isDirectOpenAICompatibleLLMProvider(provider)) {
+          const { apiKey, model } = llmSettings.customTranslateConfig
+          const baseUrl = getLLMProviderBaseUrl(provider, llmSettings.customTranslateConfig)
+          const resolvedModel =
+            model || (provider === 'aihubmix' ? getDefaultLLMModel(provider) : '')
+          if (!apiKey || !resolvedModel) {
+            toast.error(
+              provider === 'aihubmix'
+                ? 'Please configure your AIHubMix API key and model'
+                : 'Please configure custom provider URL, API key, and model'
+            )
+            return null
+          }
+          if (!baseUrl) {
+            toast.error('Please configure custom provider URL')
             return null
           }
           const client = createOpenAIClientForBaseUrl(baseUrl)
           const resp = await client.chatCompletions(
             {
-              model,
+              model: resolvedModel,
               messages: [
                 { role: 'system', content: DEFAULT_TRANSLATE_SYSTEM_PROMPT },
                 { role: 'user', content: prompt },

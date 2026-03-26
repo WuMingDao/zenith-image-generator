@@ -8,6 +8,7 @@ export type LLMProviderType =
   | 'huggingface-llm'
   | 'gitee-llm'
   | 'modelscope-llm'
+  | 'aihubmix'
   | 'deepseek'
   | 'custom'
 
