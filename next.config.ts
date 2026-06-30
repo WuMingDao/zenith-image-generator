@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   logging: {
     browserToTerminal: true,
   },
-    experimental: {
+  experimental: {
     turbopackFileSystemCacheForDev: false,
   },
 };
