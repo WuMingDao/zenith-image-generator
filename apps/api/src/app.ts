@@ -15,6 +15,7 @@ import {
 } from './middleware'
 import './channels'
 import { registerOpenAIRoutes } from './openai/routes'
+import { proxyRoutes } from './proxy/routes'
 
 export interface AppConfig {
   corsOrigins?: string[]
@@ -40,6 +41,9 @@ export function createApp(config: AppConfig = {}) {
 
   // Health check
   app.get('/', (c) => c.json({ status: 'ok' }))
+
+  // Image proxy for Gradio file URLs (see packages/shared/src/utils/gradio-proxy.ts)
+  app.route('/proxy', proxyRoutes)
 
   // OpenAI-compatible routes
   registerOpenAIRoutes(app)

@@ -42,9 +42,43 @@ describe('OpenAI-compatible routes', () => {
     expect(res.status).toBe(200)
     const json = (await res.json()) as { created: number; data: Array<{ url: string }> }
     expect(json.created).toBeTypeOf('number')
+    // Non-Gradio URLs pass through unchanged
     expect(json.data[0]?.url).toBe('https://hf.space/img.png')
 
     expect(mockFetch.mock.calls[0]?.[0]).toContain('luca115-z-image-turbo.hf.space')
+  })
+
+  it('POST /v1/images/generations wraps Gradio file URLs behind /proxy/image', async () => {
+    const mockFetch = vi.mocked(fetch)
+
+    // Gradio queue
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ event_id: 'evt-2' }),
+    } as Response)
+
+    // Gradio result (SSE) with a real Gradio file URL
+    const gradioUrl =
+      'https://mrfakename-z-image-turbo.hf.space/gradio_api/file=/tmp/gradio/abc123/image.png'
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      text: async () => `event: complete\ndata: [{"url":"${gradioUrl}"}, 7]\n\n`,
+    } as Response)
+
+    const res = await app.request('/v1/images/generations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: 'a dog', size: '1024x1024' }),
+    })
+
+    expect(res.status).toBe(200)
+    const json = (await res.json()) as { data: Array<{ url: string }> }
+    const returnedUrl = json.data[0]?.url
+    // URL should be a fully-qualified proxy URL (includes origin from request)
+    const parsed = new URL(returnedUrl!)
+    expect(parsed.pathname).toBe('/proxy/image')
+    // The original Gradio URL must be fully recoverable from the url= param
+    expect(parsed.searchParams.get('url')).toBe(gradioUrl)
   })
 
   it('POST /v1/images/generations supports gitee/ model prefix + gitee: token', async () => {

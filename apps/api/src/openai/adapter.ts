@@ -4,6 +4,7 @@ import {
   validateDimensions,
   validatePrompt,
   validateSteps,
+  wrapGradioUrl,
 } from '@z-image/shared'
 import type { ImageRequest, ImageResult } from '../core/types'
 import type { OpenAIImageRequest, OpenAIImageResponse } from './types'
@@ -88,9 +89,13 @@ export function convertRequest(req: OpenAIImageRequest): OpenAIConvertedRequest 
   }
 }
 
-export function convertResponse(result: ImageResult): OpenAIImageResponse {
+export function convertResponse(result: ImageResult, baseUrl?: string): OpenAIImageResponse {
   return {
     created: Math.floor(Date.now() / 1000),
-    data: [{ url: result.url }],
+    // Wrap Gradio file URLs behind our /proxy/image endpoint so clients can
+    // access images without being blocked by Gradio 6.20.0+ SSRF-safe proxy
+    // or ephemeral /tmp/gradio/ file cleanup. Non-Gradio URLs pass through.
+    // The original URL is preserved in the url= query param for later retrieval.
+    data: [{ url: wrapGradioUrl(result.url, baseUrl) }],
   }
 }

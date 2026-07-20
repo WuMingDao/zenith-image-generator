@@ -1,5 +1,5 @@
 import { Errors, getModelsByProvider } from '@z-image/shared'
-import { Hono } from 'hono'
+import { Hono, type Context } from 'hono'
 import { ensureCustomChannelsInitialized, getChannel, getImageChannel } from '../channels'
 import { parseTokens, runWithTokenRotation } from '../core/token-manager'
 import { bodyLimit, rateLimitPresets, sendError, timeout } from '../middleware'
@@ -7,6 +7,27 @@ import { convertRequest, convertResponse, parseBearerToken } from './adapter'
 import { handleChatCompletion } from './chat'
 import { resolveModel } from './model-resolver'
 import type { OpenAIImageRequest, OpenAIModelsListResponse } from './types'
+
+/**
+ * Derive the absolute origin (scheme + host) of the deployed API from the
+ * incoming request. Used to build fully-qualified proxy URLs so clients can
+ * access wrapped Gradio file URLs from any domain.
+ *
+ * Honors `X-Forwarded-Host` / `X-Forwarded-Proto` for deployments behind a
+ * CDN or reverse proxy (e.g. Cloudflare Workers custom domain).
+ */
+function getRequestOrigin(c: Context): string {
+  const forwardedHost = c.req.header('x-forwarded-host')
+  const forwardedProto = c.req.header('x-forwarded-proto')
+  try {
+    const parsed = new URL(c.req.url)
+    const host = forwardedHost || parsed.host
+    const proto = forwardedProto || parsed.protocol.replace(':', '')
+    return `${proto}://${host}`
+  } catch {
+    return ''
+  }
+}
 
 function resolveImageChannel(modelParam?: string): { channelId: string; model: string } {
   const raw = (modelParam || '').trim()
@@ -153,8 +174,9 @@ export function registerOpenAIRoutes(app: Hono) {
         (token) => imageChannel.generate({ ...internalReq, model: resolvedModel }, token),
         { allowAnonymous }
       )
-      // Return raw URL for compatibility with OpenAI "url" response_format.
-      return c.json(convertResponse(result))
+      // Convert to OpenAI-compatible response. Pass the request origin so
+      // Gradio file URLs are wrapped with a fully-qualified proxy URL.
+      return c.json(convertResponse(result, getRequestOrigin(c)))
     } catch (err) {
       return sendError(c, err)
     }
