@@ -52,6 +52,7 @@ export function useImageGenerator() {
     gitee: '',
     huggingface: '',
     modelscope: '',
+    'modelscope-global': '',
   })
   const [provider, setProvider] = useState<ProviderType>(
     () => loadSettings().provider ?? 'huggingface'
@@ -437,6 +438,8 @@ export function useImageGenerator() {
           return loadTokensArray('gitee')
         case 'modelscope-llm':
           return loadTokensArray('modelscope')
+        case 'modelscope-global-llm':
+          return loadTokensArray('modelscope-global')
         case 'huggingface-llm':
           return loadTokensArray('huggingface')
         case 'deepseek':
@@ -496,10 +499,12 @@ export function useImageGenerator() {
             ? 'gitee'
             : llmProvider === 'modelscope-llm'
               ? 'modelscope'
-              : llmProvider === 'huggingface-llm'
-                ? 'huggingface'
-                : llmProvider === 'deepseek'
-                  ? 'deepseek'
+              : llmProvider === 'modelscope-global-llm'
+                ? 'modelscope-global'
+                : llmProvider === 'huggingface-llm'
+                  ? 'huggingface'
+                  : llmProvider === 'deepseek'
+                    ? 'deepseek'
                   : null
 
         if (cfg?.needsAuth && tokens.length === 0) {
@@ -596,10 +601,12 @@ export function useImageGenerator() {
             ? 'gitee'
             : llmProvider === 'modelscope-llm'
               ? 'modelscope'
-              : llmProvider === 'huggingface-llm'
-                ? 'huggingface'
-                : llmProvider === 'deepseek'
-                  ? 'deepseek'
+              : llmProvider === 'modelscope-global-llm'
+                ? 'modelscope-global'
+                : llmProvider === 'huggingface-llm'
+                  ? 'huggingface'
+                  : llmProvider === 'deepseek'
+                    ? 'deepseek'
                   : null
 
         if (cfg?.needsAuth && tokens.length === 0) {

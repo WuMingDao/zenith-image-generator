@@ -75,6 +75,23 @@ export const LLM_PROVIDER_CONFIGS: Record<LLMProviderType, LLMProviderConfig> = 
       { id: 'Qwen/Qwen2.5-72B-Instruct', name: 'Qwen 2.5 72B', description: 'Alibaba Qwen model' },
     ],
   },
+  'modelscope-global-llm': {
+    id: 'modelscope-global-llm',
+    name: 'ModelScope Global',
+    url: 'https://api-inference.modelscope.ai/v1/chat/completions',
+    defaultModel: 'deepseek-ai/DeepSeek-V3.2',
+    needsAuth: true,
+    authHeader: 'X-MS-Token',
+    models: [
+      {
+        id: 'deepseek-ai/DeepSeek-V3.2',
+        name: 'DeepSeek V3.2',
+        description: 'Latest DeepSeek model on ModelScope Global',
+      },
+      { id: 'deepseek-ai/DeepSeek-V3', name: 'DeepSeek V3', description: 'DeepSeek V3 model' },
+      { id: 'Qwen/Qwen2.5-72B-Instruct', name: 'Qwen 2.5 72B', description: 'Alibaba Qwen model' },
+    ],
+  },
   deepseek: {
     id: 'deepseek',
     name: 'DeepSeek Official',

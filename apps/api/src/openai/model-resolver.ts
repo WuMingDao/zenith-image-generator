@@ -22,6 +22,9 @@ const MODELSCOPE_MODEL_ALIASES: Record<string, string> = {
   'flux-1': 'MusePublic/489_ckpt_FLUX_1',
 }
 
+// ModelScope Global uses the same model aliases as ModelScope
+const MODELSCOPE_GLOBAL_MODEL_ALIASES: Record<string, string> = { ...MODELSCOPE_MODEL_ALIASES }
+
 export function resolveModel(modelParam?: string): ResolvedModel {
   const model = (modelParam || DEFAULT_HF_MODEL).trim()
 
@@ -33,6 +36,11 @@ export function resolveModel(modelParam?: string): ResolvedModel {
   if (model.startsWith('ms/')) {
     const raw = model.slice('ms/'.length)
     return { provider: 'modelscope', model: MODELSCOPE_MODEL_ALIASES[raw] || raw }
+  }
+
+  if (model.startsWith('msg/')) {
+    const raw = model.slice('msg/'.length)
+    return { provider: 'modelscope-global', model: MODELSCOPE_GLOBAL_MODEL_ALIASES[raw] || raw }
   }
 
   if (model.startsWith('a4f/')) {

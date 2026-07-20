@@ -8,6 +8,7 @@ const TOKEN_STORAGE_KEYS: Record<TokenProvider, string> = {
   gitee: 'giteeToken',
   huggingface: 'hfToken',
   modelscope: 'msToken',
+  'modelscope-global': 'msgToken',
   deepseek: 'deepseekToken',
 }
 
@@ -82,6 +83,7 @@ export async function loadAllTokens(): Promise<Record<TokenProvider, string>> {
     gitee: '',
     huggingface: '',
     modelscope: '',
+    'modelscope-global': '',
     deepseek: '',
   }
   for (const provider of Object.keys(TOKEN_STORAGE_KEYS) as TokenProvider[]) {
@@ -111,6 +113,7 @@ export async function loadAllTokensArrays(): Promise<Record<TokenProvider, strin
     gitee: [],
     huggingface: [],
     modelscope: [],
+    'modelscope-global': [],
     deepseek: [],
   }
   for (const provider of Object.keys(TOKEN_STORAGE_KEYS) as TokenProvider[]) {

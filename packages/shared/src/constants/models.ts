@@ -228,6 +228,60 @@ export const MODEL_CONFIGS: ModelConfig[] = [
       seed: true,
     },
   },
+  // ModelScope Global models (mirror of ModelScope, served from api-inference.modelscope.ai)
+  {
+    id: 'Tongyi-MAI/Z-Image-Turbo',
+    name: 'Z-Image Turbo',
+    provider: 'modelscope-global',
+    features: {
+      negativePrompt: true,
+      steps: { min: 1, max: 20, default: 9 },
+      seed: true,
+    },
+  },
+  {
+    id: 'Qwen/Qwen-Image-2512',
+    name: 'Qwen Image 2512',
+    provider: 'modelscope-global',
+    features: {
+      negativePrompt: true,
+      steps: { min: 1, max: 50, default: 4 },
+      seed: true,
+    },
+  },
+  {
+    id: 'black-forest-labs/FLUX.2-dev',
+    name: 'FLUX.2',
+    provider: 'modelscope-global',
+    features: {
+      negativePrompt: true,
+      steps: { min: 1, max: 50, default: 24 },
+      guidanceScale: { min: 1, max: 10, default: 3.5 },
+      seed: true,
+    },
+  },
+  {
+    id: 'black-forest-labs/FLUX.1-Krea-dev',
+    name: 'FLUX.1 Krea',
+    provider: 'modelscope-global',
+    features: {
+      negativePrompt: true,
+      steps: { min: 1, max: 50, default: 24 },
+      guidanceScale: { min: 1, max: 20, default: 3.5 },
+      seed: true,
+    },
+  },
+  {
+    id: 'MusePublic/489_ckpt_FLUX_1',
+    name: 'FLUX.1',
+    provider: 'modelscope-global',
+    features: {
+      negativePrompt: true,
+      steps: { min: 1, max: 50, default: 24 },
+      guidanceScale: { min: 1, max: 20, default: 3.5 },
+      seed: true,
+    },
+  },
 ]
 
 /** Get models by provider */

@@ -69,6 +69,7 @@ export const PROVIDER_OPTIONS: { value: ProviderType; label: string; requiresAut
   { value: 'a4f', label: 'A4F', requiresAuth: true },
   { value: 'gitee', label: 'Gitee AI', requiresAuth: true },
   { value: 'modelscope', label: 'ModelScope', requiresAuth: true },
+  { value: 'modelscope-global', label: 'ModelScope Global', requiresAuth: true },
 ]
 
 // Get default model for provider
@@ -88,6 +89,7 @@ export const LLM_PROVIDER_OPTIONS: { value: LLMProviderType; label: string; need
     { value: 'huggingface-llm', label: 'HuggingFace', needsAuth: false },
     { value: 'gitee-llm', label: 'Gitee AI', needsAuth: true },
     { value: 'modelscope-llm', label: 'ModelScope', needsAuth: true },
+    { value: 'modelscope-global-llm', label: 'ModelScope Global', needsAuth: true },
     { value: 'custom', label: 'Custom (OpenAI Compatible)', needsAuth: true },
   ]
 

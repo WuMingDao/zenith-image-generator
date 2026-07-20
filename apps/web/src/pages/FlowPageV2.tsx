@@ -111,6 +111,7 @@ function FlowCanvas() {
     gitee: '',
     huggingface: '',
     modelscope: '',
+    'modelscope-global': '',
   })
   const [provider, setProvider] = useState<ProviderType>(
     () => loadSettings().provider ?? 'huggingface'
@@ -274,6 +275,9 @@ function FlowCanvas() {
           case 'modelscope-llm':
             token = await decryptTokenFromStore('modelscope')
             break
+          case 'modelscope-global-llm':
+            token = await decryptTokenFromStore('modelscope-global')
+            break
           case 'huggingface-llm':
             token = await decryptTokenFromStore('huggingface')
             break
@@ -351,6 +355,9 @@ function FlowCanvas() {
             break
           case 'modelscope-llm':
             token = await decryptTokenFromStore('modelscope')
+            break
+          case 'modelscope-global-llm':
+            token = await decryptTokenFromStore('modelscope-global')
             break
           case 'huggingface-llm':
             token = await decryptTokenFromStore('huggingface')

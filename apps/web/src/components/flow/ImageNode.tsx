@@ -45,9 +45,11 @@ async function generateImageApiSingle(
             ? `gitee:${token}`
             : provider === 'modelscope'
               ? `ms:${token}`
-              : provider === 'a4f'
-                ? `a4f:${token}`
-                : token
+              : provider === 'modelscope-global'
+                ? `msg:${token}`
+                : provider === 'a4f'
+                  ? `a4f:${token}`
+                  : token
         }`,
       }),
     },
@@ -58,9 +60,11 @@ async function generateImageApiSingle(
           ? `gitee/${model}`
           : provider === 'modelscope'
             ? `ms/${model}`
-            : provider === 'a4f'
-              ? `a4f/${model}`
-              : model,
+            : provider === 'modelscope-global'
+              ? `msg/${model}`
+              : provider === 'a4f'
+                ? `a4f/${model}`
+                : model,
       size: `${width}x${height}`,
       steps: 9,
       seed,

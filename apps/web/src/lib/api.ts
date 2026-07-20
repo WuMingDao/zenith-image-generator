@@ -109,6 +109,7 @@ export const openai = new OpenAIClient(API_URL)
 export function buildImageTokenWithPrefix(provider: ProviderType, token: string): string {
   if (provider === 'gitee') return `gitee:${token}`
   if (provider === 'modelscope') return `ms:${token}`
+  if (provider === 'modelscope-global') return `msg:${token}`
   if (provider === 'a4f') return `a4f:${token}`
   // huggingface: no prefix (default)
   return token
@@ -117,6 +118,7 @@ export function buildImageTokenWithPrefix(provider: ProviderType, token: string)
 export function getFullImageModelId(provider: ProviderType, modelId: string): string {
   if (provider === 'gitee') return `gitee/${modelId}`
   if (provider === 'modelscope') return `ms/${modelId}`
+  if (provider === 'modelscope-global') return `msg/${modelId}`
   if (provider === 'a4f') return `a4f/${modelId}`
   return modelId
 }
@@ -124,6 +126,7 @@ export function getFullImageModelId(provider: ProviderType, modelId: string): st
 export function buildChatTokenWithPrefix(provider: LLMProviderType, token: string): string {
   if (provider === 'gitee-llm') return `gitee:${token}`
   if (provider === 'modelscope-llm') return `ms:${token}`
+  if (provider === 'modelscope-global-llm') return `msg:${token}`
   if (provider === 'huggingface-llm') return `hf:${token}`
   if (provider === 'deepseek') return `deepseek:${token}`
   return token
@@ -132,6 +135,7 @@ export function buildChatTokenWithPrefix(provider: LLMProviderType, token: strin
 export function getFullChatModelId(provider: LLMProviderType, modelId: string): string {
   if (provider === 'gitee-llm') return `gitee/${modelId}`
   if (provider === 'modelscope-llm') return `ms/${modelId}`
+  if (provider === 'modelscope-global-llm') return `msg/${modelId}`
   if (provider === 'huggingface-llm') return `hf/${modelId}`
   if (provider === 'deepseek') return `deepseek/${modelId}`
   if (provider === 'pollinations') return `pollinations/${modelId}`

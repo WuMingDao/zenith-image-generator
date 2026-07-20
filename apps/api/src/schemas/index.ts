@@ -13,7 +13,7 @@ import { PROMPT_LIMITS } from '../constants'
 // ============================================================================
 
 /** Provider type enum */
-export const ProviderSchema = z.enum(['gitee', 'huggingface', 'modelscope'])
+export const ProviderSchema = z.enum(['gitee', 'huggingface', 'modelscope', 'modelscope-global'])
 
 /** LLM Provider type enum */
 export const LLMProviderSchema = z.enum([
@@ -21,6 +21,7 @@ export const LLMProviderSchema = z.enum([
   'huggingface',
   'gitee',
   'modelscope',
+  'modelscope-global',
   'deepseek',
 ])
 

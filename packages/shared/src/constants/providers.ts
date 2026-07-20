@@ -44,6 +44,13 @@ export const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
     authHeader: 'X-MS-Token',
     baseUrl: 'https://api-inference.modelscope.cn/v1',
   },
+  'modelscope-global': {
+    id: 'modelscope-global',
+    name: 'ModelScope Global',
+    requiresAuth: true,
+    authHeader: 'X-MS-Token',
+    baseUrl: 'https://api-inference.modelscope.ai/v1',
+  },
 } as const
 
 /** Get provider configuration by ID */

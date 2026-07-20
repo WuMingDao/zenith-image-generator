@@ -23,6 +23,10 @@ function parseChatBearerToken(authHeader?: string): {
     const token = raw.slice('ms:'.length).trim()
     return token ? { providerHint: 'modelscope', token } : {}
   }
+  if (raw.startsWith('msg:')) {
+    const token = raw.slice('msg:'.length).trim()
+    return token ? { providerHint: 'modelscope-global', token } : {}
+  }
   if (raw.startsWith('hf:')) {
     const token = raw.slice('hf:'.length).trim()
     return token ? { providerHint: 'huggingface', token } : {}
@@ -61,6 +65,8 @@ function resolveChatModel(model: string): {
     return { channelId: 'gitee', model: trimmed.slice('gitee/'.length) }
   if (trimmed.startsWith('ms/'))
     return { channelId: 'modelscope', model: trimmed.slice('ms/'.length) }
+  if (trimmed.startsWith('msg/'))
+    return { channelId: 'modelscope-global', model: trimmed.slice('msg/'.length) }
   if (trimmed.startsWith('hf/'))
     return { channelId: 'huggingface', model: trimmed.slice('hf/'.length) }
   if (trimmed.startsWith('deepseek/'))
