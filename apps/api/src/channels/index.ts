@@ -4,6 +4,7 @@ import { a4fChannel } from './a4f'
 import { createDeepseekChannel, loadCustomChannels } from './custom'
 import { giteeChannel } from './gitee'
 import { huggingfaceChannel } from './huggingface'
+import { minimaxChannel } from './minimax'
 import { modelscopeChannel } from './modelscope'
 
 const builtinChannels = [
@@ -11,6 +12,7 @@ const builtinChannels = [
   modelscopeChannel,
   giteeChannel,
   huggingfaceChannel,
+  minimaxChannel,
   createDeepseekChannel(),
 ]
 
@@ -47,4 +49,5 @@ export * from './a4f'
 export * from './custom'
 export * from './gitee'
 export * from './huggingface'
+export * from './minimax'
 export * from './modelscope'
