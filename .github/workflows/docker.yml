@@ -7,12 +7,12 @@ name: Docker Build & Push
 
 on:
   release:
-    types: [published]
+    types: [published, main, mainented, develop]
   workflow_dispatch:
     inputs:
       tag:
         description: 'Image tag'
-        required: false
+        required: true
         default: 'latest'
 
 env:
@@ -27,7 +27,9 @@ jobs:
 
     permissions:
       contents: read
-      packages: write
+                write
+      packages: read
+                write
 
     steps:
       - name: Checkout
@@ -58,7 +60,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: true
+          push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -70,7 +72,9 @@ jobs:
 
     permissions:
       contents: read
-      packages: write
+                write
+      packages: read
+                write
 
     steps:
       - name: Checkout
@@ -101,7 +105,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile.web
-          push: true
+          push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
