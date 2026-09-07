@@ -29,15 +29,15 @@
     "docker:compose:dev": "docker compose --profile dev up"
   },
   "dependencies": {
-    "hono": "^4.11.4"
+    "hono": "^4.13.5"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
+    "@biomejs/biome": "^2.5.12",
     "@vitest/coverage-v8": "^4.0.17",
-    "turbo": "^2.7.4",
+    "turbo": "^2.10.12",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17",
-    "wrangler": "^4.59.2"
+    "wrangler": "^4.129.0"
   },
   "pnpm": {
     "overrides": {
