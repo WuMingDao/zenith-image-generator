@@ -21,7 +21,7 @@
     "@hono/zod-validator": "^0.7.6",
     "@z-image/shared": "workspace:*",
     "hono": "^4.11.4",
-    "zod": "^4.3.5"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260115.0",
